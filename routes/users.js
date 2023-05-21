@@ -6,21 +6,33 @@ const User = require('../Models/usersModel');
 const { isAuth, generateSendJWT } = require('../service/auth');
 const router = express.Router();
 
+// 抓取email 前綴作為使用者名稱
+const getEmailPrefix = (email)=> {
+  const regex = /^([^@]+)@/;
+  const match = email.match(regex);
+
+  if (match && match.length > 1) {
+    return match[1];
+  } else {
+    throw new Error('無法提取電子郵件前綴');
+  }
+}
+
 router.post(
   '/sign_up',
   handleAsyncError(async (req, res, next) => {
     let { email, password } = req.body;
     // 帳號密碼不可為空
     if (!email || !password) {
-      return next(appError('400', '欄位未填寫正確！', next));
+      return next(appError(400, '欄位未填寫正確！', next));
     }
     // 帳號是否為合法 Email
     if (!validator.isEmail(email)) {
-      return next(appError('400', 'Email 格式不正確', next));
+      return next(appError(400, 'Email 格式不正確', next));
     }
     // 密碼 4 碼以上
     if (!validator.isLength(password, { min: 4 })) {
-      return next(appError('400', '密碼字數低於 4 碼', next));
+      return next(appError(400, '密碼字數低於 4 碼', next));
     }
 
     // 抓資料庫的使用者資料，確認是否已有此帳號
@@ -35,6 +47,8 @@ router.post(
     const newUser = await User.create({
       email,
       password,
+      name: getEmailPrefix(email),
+      photo: null
     });
     generateSendJWT(newUser, 201, res);
   })
@@ -63,7 +77,7 @@ router.post(
   })
 );
 
-// 權限控管：取得使用者資料時，先用 isAuth 這個middleware確認是否有登入
+// 權限控管：取得使用者資料時，先用 isAuth 這個 middleware確認是否有登入
 router.get(
   '/profile/',
   isAuth,

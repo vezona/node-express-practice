@@ -21,23 +21,30 @@ const errorMsgProduction = (err, req, res, next) => {
   // 在已知的錯誤中，回傳錯誤訊息
   if (err.isOperational) {
     res.status(err.statusCode).json({
+      success: false,
+      code: err.statusCode,
       message: err.message,
     });
   } else {
     // 其他不明原因的錯誤，寫進 log 紀錄
     res.status(500).json({
-      status: 'error',
+      success: false,
+      code: 500,
       message: '系統錯誤，請洽管理員',
     });
+    
   }
 };
 // 自訂開發環境錯誤
 const errorMsgDev = (err, res) => {
-  res.status(err.statusCode).json({
-    message: err.message,
-    error: err,
-    stack: err.stack, // 測試機可以有stack，找出錯在哪個檔案
-  });
+  res.status(err.statusCode).json(
+    {
+      success: false,
+      code: err.statusCode,
+      message: err.message,
+      isOperational: err.isOperational,
+      stack: err.stack, // 測試機可以有stack，找出錯在哪個檔案
+    });
 };
 
 // 不同環境錯誤時處理

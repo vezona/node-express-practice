@@ -13,8 +13,12 @@ dotenv.config({ path: './config.env' });
 const { appError, errorEnvHandler } = require('./service/errorHandler');
 
 // ——————————  資料庫連線設定  ——————————
+const DB = process.env.DATA_BASE.replace(
+  '<password>',
+  process.env.PASSWORD
+)
 const mongoose = require('mongoose');
-mongoose.connect(process.env.DATA_BASE).then(res => console.log('連線資料成功'));
+mongoose.connect(DB).then(res => console.log('連線資料成功'));
 
 // ——————————  頁面路徑設定  ——————————
 const indexRouter = require('./routes/index');
@@ -35,8 +39,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/posts', postsRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/posts', postsRouter);
 
 // ——————————  404錯誤處理  ——————————
 app.use(function (req, res, next) {
@@ -45,5 +49,6 @@ app.use(function (req, res, next) {
 
 //  ——————————  不同環境的錯誤訊息處理(開發+正式)  ——————————
 app.use(errorEnvHandler);
+
 
 module.exports = app;
