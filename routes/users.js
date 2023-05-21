@@ -18,9 +18,11 @@ const getEmailPrefix = (email)=> {
   }
 }
 
+
 router.post(
   '/sign_up',
   handleAsyncError(async (req, res, next) => {
+     // #swagger.tags = ['User']
     let { email, password } = req.body;
     // 帳號密碼不可為空
     if (!email || !password) {
@@ -57,6 +59,7 @@ router.post(
 router.post(
   '/sign_in',
   handleAsyncError(async (req, res, next) => {
+     // #swagger.tags = ['User']
     const { email, password } = req.body;
     if (!email || !password) {
       return next(appError(400, '帳號密碼不可為空', next));
@@ -82,6 +85,7 @@ router.get(
   '/profile/',
   isAuth,
   handleAsyncError(async (req, res, next) => {
+     // #swagger.tags = ['User']
     res.status(200).json({
       status: 'success',
       user: req.user,
@@ -94,6 +98,7 @@ router.post(
   '/updatePassword',
   isAuth,
   handleAsyncError(async (req, res, next) => {
+     // #swagger.tags = ['User']
     const { password, confirmPassword } = req.body;
     if (password !== confirmPassword) {
       return next(appError('400', '密碼不一致！', next));
@@ -112,6 +117,7 @@ router.patch(
   '/updateProfile',
   isAuth,
   handleAsyncError(async (req, res, next) => {
+     // #swagger.tags = ['User']
     const { name } = req.body;
 
     // 更新使用者資料

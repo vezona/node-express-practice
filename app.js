@@ -42,6 +42,11 @@ app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/posts', postsRouter);
 
+// ——————————  設定swagger  ——————————
+const swaggerUi = require('swagger-ui-express')
+const swaggerFile = require('./swagger_output.json') // swagger JSON
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile))
+
 // ——————————  404錯誤處理  ——————————
 app.use(function (req, res, next) {
   appError(404, '無此路由資訊', next);
